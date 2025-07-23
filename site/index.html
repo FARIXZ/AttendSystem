@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AttendSystem</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f6fa;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 400px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px #0001;
+        padding: 24px;
+      }
+      h2 {
+        text-align: center;
+        color: #2a4d7a;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      input[type='text'],
+      input[type='email'],
+      input[type='password'] {
+        padding: 8px;
+        border: 1px solid #bcd;
+        border-radius: 4px;
+        font-size: 1em;
+      }
+      button {
+        background: #2a4d7a;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 1em;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #18314f;
+      }
+      .msg {
+        margin: 10px 0;
+        text-align: center;
+      }
+      .success {
+        color: #2e7d32;
+      }
+      .error {
+        color: #c62828;
+      }
+      .section {
+        margin-bottom: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>AttendSystem</h2>
+      <div class="section">
+        <h3>Register</h3>
+        <form id="registerForm">
+          <input type="text" id="regName" placeholder="Name" required />
+          <input type="email" id="regEmail" placeholder="Email" required />
+          <input type="password" id="regPassword" placeholder="Password" required />
+          <button type="submit">Register</button>
+        </form>
+        <div class="msg" id="registerMsg"></div>
+      </div>
+      <div class="section">
+        <h3>Login</h3>
+        <form id="loginForm">
+          <input type="email" id="loginEmail" placeholder="Email" required />
+          <input type="password" id="loginPassword" placeholder="Password" required />
+          <button type="submit">Login</button>
+        </form>
+        <div class="msg" id="loginMsg"></div>
+      </div>
+      <div class="section" id="attendSection" style="display: none">
+        <h3>Mark Attendance</h3>
+        <button id="attendBtn">Attend</button>
+        <div class="msg" id="attendMsg"></div>
+      </div>
+    </div>
+    <script>
+      let currentUser = null;
+      let currentUserId = null;
+
+      // Register
+      document.getElementById('registerForm').onsubmit = async function (e) {
+        e.preventDefault();
+        const name = regName.value.trim();
+        const email = regEmail.value.trim();
+        const password = regPassword.value;
+        registerMsg.textContent = '';
+        try {
+          const res = await fetch('/users/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            registerMsg.textContent = 'Registration successful!';
+            registerMsg.className = 'msg success';
+          } else {
+            registerMsg.textContent = data.error || 'Registration failed.';
+            registerMsg.className = 'msg error';
+          }
+        } catch (err) {
+          registerMsg.textContent = 'Network error.';
+          registerMsg.className = 'msg error';
+        }
+      };
+
+      // Login
+      document.getElementById('loginForm').onsubmit = async function (e) {
+        e.preventDefault();
+        const email = loginEmail.value.trim();
+        const password = loginPassword.value;
+        loginMsg.textContent = '';
+        try {
+          // Get all users and find match (since no login endpoint)
+          const res = await fetch('/users/all');
+          const users = await res.json();
+          const cryptoObj = window.crypto || window.msCrypto;
+          // Hash password (simulate backend hash)
+          const encoder = new TextEncoder();
+          const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password));
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          const hashedPassword = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+          const user = users.find((u) => u.email === email.toLowerCase() && u.password === hashedPassword);
+          if (user) {
+            currentUser = user;
+            currentUserId = user.id;
+            loginMsg.textContent = 'Login successful!';
+            loginMsg.className = 'msg success';
+            attendSection.style.display = '';
+          } else {
+            loginMsg.textContent = 'Invalid email or password.';
+            loginMsg.className = 'msg error';
+            attendSection.style.display = 'none';
+          }
+        } catch (err) {
+          loginMsg.textContent = 'Network error.';
+          loginMsg.className = 'msg error';
+        }
+      };
+
+      // Attend
+      document.getElementById('attendBtn').onclick = async function () {
+        attendMsg.textContent = '';
+        if (!currentUserId) {
+          attendMsg.textContent = 'You must be logged in.';
+          attendMsg.className = 'msg error';
+          return;
+        }
+        try {
+          const res = await fetch('/attend/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: currentUserId }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            attendMsg.textContent = 'Attendance marked!';
+            attendMsg.className = 'msg success';
+          } else {
+            attendMsg.textContent = data.error || 'Attendance failed.';
+            attendMsg.className = 'msg error';
+          }
+        } catch (err) {
+          attendMsg.textContent = 'Network error.';
+          attendMsg.className = 'msg error';
+        }
+      };
+    </script>
+  </body>
+</html>
