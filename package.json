@@ -1,0 +1,25 @@
+{
+  "name": "attendsystem",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FARIXZ/AttendSystem.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FARIXZ/AttendSystem/issues"
+  },
+  "homepage": "https://github.com/FARIXZ/AttendSystem#readme",
+  "description": "",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.4"
+  }
+}
