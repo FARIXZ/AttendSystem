@@ -22,11 +22,12 @@ app.use('/attend', attendRouter);
 // Middlewares
 app.use(log);
 app.use(express.json());
+app.use(express.static('site'));
 
 app.listen(PORT, () => {
   console.log(`Listening at http://localhost:${PORT}`);
 });
 
 app.get('/', (req, res) => {
-  // Send the html file
+  res.sendFile(__dirname + '/site/index.html');
 });

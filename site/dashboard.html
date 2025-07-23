@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AttendSystem Dashboard</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>AttendSystem Dashboard</h2>
+      <div id="welcomeMsg" class="msg"></div>
+      <div class="section" id="attendSection" style="display: none">
+        <h3>Mark Attendance</h3>
+        <button id="attendBtn">Attend</button>
+        <div class="msg" id="attendMsg"></div>
+      </div>
+      <div class="tabs" id="adminTabs" style="display:none; margin-bottom: 0;">
+        <button id="tabToday" class="tab active">Today's Attendance</button>
+        <button id="tabPeriodic" class="tab">Periodic Report</button>
+      </div>
+      <div class="section" id="adminSection" style="display: none;">
+        <div id="todayAttendanceTab">
+          <h3>All Today's Attendances</h3>
+          <button id="getAllAttendBtn">Get All Today's Attendances</button>
+          <div class="msg" id="allAttendMsg"></div>
+          <ul id="allAttendList" style="padding-left: 20px"></ul>
+        </div>
+        <div id="periodicReportTab" style="display:none;">
+          <h3>Periodic Attendance Report</h3>
+          <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+            <label>From: <input type="date" id="periodicStart" /></label>
+            <label>To: <input type="date" id="periodicEnd" /></label>
+            <button id="getPeriodicBtn">Get Report</button>
+          </div>
+          <div class="msg" id="periodicMsg"></div>
+          <ul id="periodicList" style="padding-left: 20px"></ul>
+        </div>
+      </div>
+      <br />
+      <div style="display: flex; justify-content: center; margin-top: 24px">
+        <button id="logoutBtn" style="color: #fff; background-color: rgb(145, 0, 0)">Logout</button>
+      </div>
+    </div>
+    <script src="./script.js"></script>
+    <script>
+      // Admin tab logic
+      const adminTabs = document.getElementById('adminTabs');
+      const tabToday = document.getElementById('tabToday');
+      const tabPeriodic = document.getElementById('tabPeriodic');
+      const todayAttendanceTab = document.getElementById('todayAttendanceTab');
+      const periodicReportTab = document.getElementById('periodicReportTab');
+      if (adminTabs) {
+        tabToday.onclick = function () {
+          tabToday.classList.add('active');
+          tabPeriodic.classList.remove('active');
+          todayAttendanceTab.style.display = '';
+          periodicReportTab.style.display = 'none';
+        };
+        tabPeriodic.onclick = function () {
+          tabPeriodic.classList.add('active');
+          tabToday.classList.remove('active');
+          periodicReportTab.style.display = '';
+          todayAttendanceTab.style.display = 'none';
+        };
+      }
+    </script>
+  </body>
+</html>

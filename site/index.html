@@ -4,69 +4,52 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AttendSystem</title>
+    <link rel="stylesheet" href="./style.css" />
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #f4f6fa;
-        margin: 0;
-        padding: 0;
-      }
-      .container {
-        max-width: 400px;
-        margin: 40px auto;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px #0001;
-        padding: 24px;
-      }
-      h2 {
-        text-align: center;
-        color: #2a4d7a;
-      }
-      form {
+      .tabs {
         display: flex;
-        flex-direction: column;
-        gap: 12px;
+        justify-content: center;
+        margin-bottom: 18px;
+        gap: 8px;
       }
-      input[type='text'],
-      input[type='email'],
-      input[type='password'] {
-        padding: 8px;
-        border: 1px solid #bcd;
-        border-radius: 4px;
-        font-size: 1em;
-      }
-      button {
-        background: #2a4d7a;
-        color: #fff;
+      .tab {
+        background: #e3eaf5;
         border: none;
-        padding: 10px;
-        border-radius: 4px;
+        padding: 10px 24px;
+        border-radius: 4px 4px 0 0;
         font-size: 1em;
+        color: #2a4d7a;
         cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+        outline: none;
       }
-      button:hover {
-        background: #18314f;
-      }
-      .msg {
-        margin: 10px 0;
-        text-align: center;
-      }
-      .success {
-        color: #2e7d32;
-      }
-      .error {
-        color: #c62828;
+      .tab.active {
+        background: #fff;
+        color: #18314f;
+        font-weight: bold;
+        box-shadow: 0 -2px 8px #0001;
       }
       .section {
-        margin-bottom: 32px;
+        transition: opacity 0.3s;
+      }
+      .section[style*='display: none'] {
+        opacity: 0;
+        pointer-events: none;
+        height: 0;
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <h2>AttendSystem</h2>
-      <div class="section">
+      <div class="tabs">
+        <button id="tabRegister" class="tab active">Register</button>
+        <button id="tabLogin" class="tab">Login</button>
+      </div>
+      <div class="section" id="registerSection">
         <h3>Register</h3>
         <form id="registerForm">
           <input type="text" id="regName" placeholder="Name" required />
@@ -76,7 +59,7 @@
         </form>
         <div class="msg" id="registerMsg"></div>
       </div>
-      <div class="section">
+      <div class="section" id="loginSection" style="display: none">
         <h3>Login</h3>
         <form id="loginForm">
           <input type="email" id="loginEmail" placeholder="Email" required />
@@ -85,103 +68,34 @@
         </form>
         <div class="msg" id="loginMsg"></div>
       </div>
-      <div class="section" id="attendSection" style="display: none">
-        <h3>Mark Attendance</h3>
-        <button id="attendBtn">Attend</button>
-        <div class="msg" id="attendMsg"></div>
-      </div>
+      <!-- Attendance and admin UI moved to dashboard.html -->
     </div>
+    <script src="./script.js"></script>
     <script>
-      let currentUser = null;
-      let currentUserId = null;
-
-      // Register
-      document.getElementById('registerForm').onsubmit = async function (e) {
-        e.preventDefault();
-        const name = regName.value.trim();
-        const email = regEmail.value.trim();
-        const password = regPassword.value;
-        registerMsg.textContent = '';
-        try {
-          const res = await fetch('/users/add', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, password }),
-          });
-          const data = await res.json();
-          if (res.ok) {
-            registerMsg.textContent = 'Registration successful!';
-            registerMsg.className = 'msg success';
-          } else {
-            registerMsg.textContent = data.error || 'Registration failed.';
-            registerMsg.className = 'msg error';
-          }
-        } catch (err) {
-          registerMsg.textContent = 'Network error.';
-          registerMsg.className = 'msg error';
-        }
+      // Tab switching logic
+      const tabRegister = document.getElementById('tabRegister');
+      const tabLogin = document.getElementById('tabLogin');
+      const registerSection = document.getElementById('registerSection');
+      const loginSection = document.getElementById('loginSection');
+      tabRegister.onclick = function () {
+        tabRegister.classList.add('active');
+        tabLogin.classList.remove('active');
+        registerSection.style.display = '';
+        loginSection.style.display = 'none';
+        setTimeout(() => {
+          registerSection.style.opacity = 1;
+          loginSection.style.opacity = 0;
+        }, 10);
       };
-
-      // Login
-      document.getElementById('loginForm').onsubmit = async function (e) {
-        e.preventDefault();
-        const email = loginEmail.value.trim();
-        const password = loginPassword.value;
-        loginMsg.textContent = '';
-        try {
-          // Get all users and find match (since no login endpoint)
-          const res = await fetch('/users/all');
-          const users = await res.json();
-          const cryptoObj = window.crypto || window.msCrypto;
-          // Hash password (simulate backend hash)
-          const encoder = new TextEncoder();
-          const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password));
-          const hashArray = Array.from(new Uint8Array(hashBuffer));
-          const hashedPassword = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-          const user = users.find((u) => u.email === email.toLowerCase() && u.password === hashedPassword);
-          if (user) {
-            currentUser = user;
-            currentUserId = user.id;
-            loginMsg.textContent = 'Login successful!';
-            loginMsg.className = 'msg success';
-            attendSection.style.display = '';
-          } else {
-            loginMsg.textContent = 'Invalid email or password.';
-            loginMsg.className = 'msg error';
-            attendSection.style.display = 'none';
-          }
-        } catch (err) {
-          loginMsg.textContent = 'Network error.';
-          loginMsg.className = 'msg error';
-        }
-      };
-
-      // Attend
-      document.getElementById('attendBtn').onclick = async function () {
-        attendMsg.textContent = '';
-        if (!currentUserId) {
-          attendMsg.textContent = 'You must be logged in.';
-          attendMsg.className = 'msg error';
-          return;
-        }
-        try {
-          const res = await fetch('/attend/add', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: currentUserId }),
-          });
-          const data = await res.json();
-          if (res.ok) {
-            attendMsg.textContent = 'Attendance marked!';
-            attendMsg.className = 'msg success';
-          } else {
-            attendMsg.textContent = data.error || 'Attendance failed.';
-            attendMsg.className = 'msg error';
-          }
-        } catch (err) {
-          attendMsg.textContent = 'Network error.';
-          attendMsg.className = 'msg error';
-        }
+      tabLogin.onclick = function () {
+        tabLogin.classList.add('active');
+        tabRegister.classList.remove('active');
+        loginSection.style.display = '';
+        registerSection.style.display = 'none';
+        setTimeout(() => {
+          loginSection.style.opacity = 1;
+          registerSection.style.opacity = 0;
+        }, 10);
       };
     </script>
   </body>
