@@ -5,42 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AttendSystem</title>
     <link rel="stylesheet" href="./style.css" />
-    <style>
-      .tabs {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 18px;
-        gap: 8px;
-      }
-      .tab {
-        background: #e3eaf5;
-        border: none;
-        padding: 10px 24px;
-        border-radius: 4px 4px 0 0;
-        font-size: 1em;
-        color: #2a4d7a;
-        cursor: pointer;
-        transition: background 0.2s, color 0.2s;
-        outline: none;
-      }
-      .tab.active {
-        background: #fff;
-        color: #18314f;
-        font-weight: bold;
-        box-shadow: 0 -2px 8px #0001;
-      }
-      .section {
-        transition: opacity 0.3s;
-      }
-      .section[style*='display: none'] {
-        opacity: 0;
-        pointer-events: none;
-        height: 0;
-        overflow: hidden;
-        padding: 0;
-        margin: 0;
-      }
-    </style>
   </head>
   <body>
     <div class="container">
@@ -71,32 +35,5 @@
       <!-- Attendance and admin UI moved to dashboard.html -->
     </div>
     <script src="./script.js"></script>
-    <script>
-      // Tab switching logic
-      const tabRegister = document.getElementById('tabRegister');
-      const tabLogin = document.getElementById('tabLogin');
-      const registerSection = document.getElementById('registerSection');
-      const loginSection = document.getElementById('loginSection');
-      tabRegister.onclick = function () {
-        tabRegister.classList.add('active');
-        tabLogin.classList.remove('active');
-        registerSection.style.display = '';
-        loginSection.style.display = 'none';
-        setTimeout(() => {
-          registerSection.style.opacity = 1;
-          loginSection.style.opacity = 0;
-        }, 10);
-      };
-      tabLogin.onclick = function () {
-        tabLogin.classList.add('active');
-        tabRegister.classList.remove('active');
-        loginSection.style.display = '';
-        registerSection.style.display = 'none';
-        setTimeout(() => {
-          loginSection.style.opacity = 1;
-          registerSection.style.opacity = 0;
-        }, 10);
-      };
-    </script>
   </body>
 </html>

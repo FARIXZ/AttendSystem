@@ -78,6 +78,85 @@ if (document.getElementById('welcomeMsg')) {
   document.getElementById('attendSection').style.display = '';
   if (user.role === 'admin') {
     document.getElementById('adminSection').style.display = '';
+    const adminTabs = document.getElementById('adminTabs');
+    if (adminTabs) adminTabs.style.display = '';
+  }
+  // Admin: Periodic Report
+  const getPeriodicBtn = document.getElementById('getPeriodicBtn');
+  if (getPeriodicBtn) {
+    getPeriodicBtn.onclick = async function () {
+      const periodicMsg = document.getElementById('periodicMsg');
+      const periodicTableBody = document.getElementById('periodicTableBody');
+      const startInput = document.getElementById('periodicStart');
+      const endInput = document.getElementById('periodicEnd');
+      const periodicTableOuter = document.getElementById('periodicTableOuter');
+      periodicMsg.textContent = '';
+      periodicTableBody.innerHTML = '';
+      if (periodicTableOuter) periodicTableOuter.style.display = 'block';
+      const startVal = startInput.value;
+      const endVal = endInput.value;
+      if (!startVal || !endVal) {
+        periodicMsg.textContent = 'Please select both start and end dates.';
+        periodicMsg.className = 'msg error';
+        return;
+      }
+      // Set end date to next day for exclusive range
+      const startISO = new Date(startVal).toISOString();
+      const endDate = new Date(endVal);
+      endDate.setDate(endDate.getDate() + 1);
+      const endISO = endDate.toISOString();
+      try {
+        const res = await fetch(`/attend/all?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`);
+        const users = await res.json();
+        if (Array.isArray(users) && users.length > 0) {
+          periodicMsg.textContent = `Found ${users.length} user(s) with attendance in range:`;
+          periodicMsg.className = 'msg success';
+          users.forEach((u) => {
+            let times = [];
+            if (u.attendance && Array.isArray(u.attendance)) {
+              const entries = u.attendance.filter((entry) => {
+                const ts = new Date(entry.timestamp);
+                return ts >= new Date(startVal) && ts < endDate;
+              });
+              times = entries.map((e) => {
+                const date = new Date(e.timestamp);
+                let hours = date.getHours();
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                return `${date.toLocaleDateString()} ${hours}:${minutes} ${ampm}`;
+              });
+            }
+            const tr = document.createElement('tr');
+            const tdUser = document.createElement('td');
+            tdUser.className = 'user-col';
+            tdUser.textContent = u.name || u.id || u.email;
+            const tdTimes = document.createElement('td');
+            tdTimes.className = 'attend-col';
+            if (times.length) {
+              let grouped = [];
+              for (let i = 0; i < times.length; i += 5) {
+                grouped.push(times.slice(i, i + 5).join(', '));
+              }
+              tdTimes.innerHTML = grouped.join('<br>');
+            } else {
+              tdTimes.textContent = '-';
+            }
+            tr.appendChild(tdUser);
+            tr.appendChild(tdTimes);
+            periodicTableBody.appendChild(tr);
+          });
+        } else {
+          periodicMsg.textContent = 'No attendances found for this period.';
+          periodicMsg.className = 'msg error';
+          if (periodicTableOuter) periodicTableOuter.style.display = 'block';
+        }
+      } catch (err) {
+        periodicMsg.textContent = 'Network error.';
+        periodicMsg.className = 'msg error';
+      }
+    };
   }
   // Attendance
   document.getElementById('attendBtn').onclick = async function () {
@@ -153,4 +232,51 @@ if (document.getElementById('welcomeMsg')) {
     localStorage.removeItem('attendUser');
     window.location.href = 'index.html';
   };
+  // Tab logic
+  const adminTabs = document.getElementById('adminTabs');
+  const tabToday = document.getElementById('tabToday');
+  const tabPeriodic = document.getElementById('tabPeriodic');
+  const todayAttendanceTab = document.getElementById('todayAttendanceTab');
+  const periodicReportTab = document.getElementById('periodicReportTab');
+  if (adminTabs) {
+    tabToday.onclick = function () {
+      tabToday.classList.add('active');
+      tabPeriodic.classList.remove('active');
+      todayAttendanceTab.style.display = '';
+      periodicReportTab.style.display = 'none';
+      if (periodicTableOuter) periodicTableOuter.style.display = 'none';
+    };
+    tabPeriodic.onclick = function () {
+      tabPeriodic.classList.add('active');
+      tabToday.classList.remove('active');
+      periodicReportTab.style.display = '';
+      todayAttendanceTab.style.display = 'none';
+      if (periodicTableOuter) periodicTableOuter.style.display = 'block';
+    };
+  }
 }
+// Tab switching logic
+const tabRegister = document.getElementById('tabRegister');
+const tabLogin = document.getElementById('tabLogin');
+const registerSection = document.getElementById('registerSection');
+const loginSection = document.getElementById('loginSection');
+tabRegister.onclick = function () {
+  tabRegister.classList.add('active');
+  tabLogin.classList.remove('active');
+  registerSection.style.display = '';
+  loginSection.style.display = 'none';
+  setTimeout(() => {
+    registerSection.style.opacity = 1;
+    loginSection.style.opacity = 0;
+  }, 10);
+};
+tabLogin.onclick = function () {
+  tabLogin.classList.add('active');
+  tabRegister.classList.remove('active');
+  loginSection.style.display = '';
+  registerSection.style.display = 'none';
+  setTimeout(() => {
+    loginSection.style.opacity = 1;
+    registerSection.style.opacity = 0;
+  }, 10);
+};

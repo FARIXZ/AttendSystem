@@ -1,3 +1,63 @@
+/* Attendance Table Styles */
+.attend-table {
+  width: 100%;
+  min-width: 500px;
+  max-width: 1000px;
+  border-collapse: collapse;
+  margin: 16px auto 0 auto;
+  background: #f9fbfd;
+  font-size: 0.97em;
+  box-shadow: 0 1px 4px #0001;
+}
+.attend-table th,
+.attend-table td {
+  padding: 8px 10px;
+  border: 1px solid #d3e0ea;
+  text-align: left;
+  vertical-align: top;
+}
+.attend-table th {
+  background: #e3eefa;
+  color: #2a4d7a;
+  font-weight: 600;
+  min-width: 120px;
+}
+.attend-table td.user-col {
+  min-width: 120px;
+  max-width: 220px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.attend-table td.attend-col {
+  min-width: 300px;
+  max-width: 700px;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+.attend-table tbody tr:nth-child(even) {
+  background: #f1f6fa;
+}
+.attend-table tbody tr:hover {
+  background: #e0f0ff;
+}
+@media (max-width: 700px) {
+  .attend-table {
+    min-width: 0;
+    font-size: 0.92em;
+  }
+  .attend-table th,
+  .attend-table td {
+    padding: 6px 4px;
+  }
+  .attend-table td.user-col {
+    min-width: 80px;
+    max-width: 120px;
+  }
+  .attend-table td.attend-col {
+    min-width: 120px;
+    max-width: 300px;
+  }
+}
 body {
   font-family: Arial, sans-serif;
   background: #f4f6fa;
@@ -53,4 +113,38 @@ button:hover {
 }
 .section {
   margin-bottom: 32px;
+}
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+  gap: 8px;
+}
+.tab {
+  background: #e3eaf5;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 4px 4px 0 0;
+  font-size: 1em;
+  color: #2a4d7a;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  outline: none;
+}
+.tab.active {
+  background: #fff;
+  color: #18314f;
+  font-weight: bold;
+  box-shadow: 0 -2px 8px #0001;
+}
+.section {
+  transition: opacity 0.3s;
+}
+.section[style*='display: none'] {
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
 }

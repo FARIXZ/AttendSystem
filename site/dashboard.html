@@ -15,31 +15,45 @@
         <button id="attendBtn">Attend</button>
         <div class="msg" id="attendMsg"></div>
       </div>
-      <div class="tabs" id="adminTabs" style="display:none; margin-bottom: 0;">
+      <div class="tabs" id="adminTabs" style="display: none; margin-bottom: 0">
         <button id="tabToday" class="tab active">Today's Attendance</button>
         <button id="tabPeriodic" class="tab">Periodic Report</button>
       </div>
-      <div class="section" id="adminSection" style="display: none;">
+      <div class="section" id="adminSection" style="display: none">
         <div id="todayAttendanceTab">
           <h3>All Today's Attendances</h3>
           <button id="getAllAttendBtn">Get All Today's Attendances</button>
           <div class="msg" id="allAttendMsg"></div>
           <ul id="allAttendList" style="padding-left: 20px"></ul>
         </div>
-        <div id="periodicReportTab" style="display:none;">
+        <div id="periodicReportTab" style="display: none">
           <h3>Periodic Attendance Report</h3>
-          <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px">
             <label>From: <input type="date" id="periodicStart" /></label>
             <label>To: <input type="date" id="periodicEnd" /></label>
             <button id="getPeriodicBtn">Get Report</button>
           </div>
           <div class="msg" id="periodicMsg"></div>
-          <ul id="periodicList" style="padding-left: 20px"></ul>
         </div>
       </div>
       <br />
       <div style="display: flex; justify-content: center; margin-top: 24px">
         <button id="logoutBtn" style="color: #fff; background-color: rgb(145, 0, 0)">Logout</button>
+      </div>
+    </div>
+    </div>
+    <!-- Periodic Table outside container -->
+    <div id="periodicTableOuter" style="display:none; width:100%; margin:0 auto 32px auto;">
+      <div style="overflow-x:auto;">
+        <table id="periodicTable" class="attend-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Attendances</th>
+            </tr>
+          </thead>
+          <tbody id="periodicTableBody"></tbody>
+        </table>
       </div>
     </div>
     <script src="./script.js"></script>
