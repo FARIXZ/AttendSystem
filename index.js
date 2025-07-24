@@ -2,10 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { log } = require('./middleware/log');
 const { connect } = require('./db');
-const env = require('dotenv').config();
 const chalk = require('chalk');
 const app = express();
 const PORT = 3000;
+require('dotenv').config();
 // npm i chalk@4 dotenv mongoose express
 
 // Connect to MongoDB
