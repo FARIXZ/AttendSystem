@@ -14,6 +14,7 @@ router.get('/all', async (req, res) => {
     }
     const startDate = new Date(start);
     const endDate = new Date(end);
+
     if (isNaN(startDate) || isNaN(endDate)) {
       return res.status(400).json({ error: 'Invalid date format.' });
     }

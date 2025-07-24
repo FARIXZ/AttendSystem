@@ -19,11 +19,15 @@ router.get('/all', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  const userId = req.params.id;
-  let user = await model.findById(userId);
-  if (err) return res.status(500).json({ error: 'Internal server error' });
-  if (!user) return res.status(404).json({ error: 'User not found' });
-  res.json(user);
+  try {
+    const userId = req.params.id;
+    let user = await model.findOne({ id: userId });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user);
+  } catch (err) {
+    console.error(chalk.red('[4] Error fetching user:', err));
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 router.post('/login', async (req, res) => {
@@ -35,11 +39,9 @@ router.post('/login', async (req, res) => {
     if (!user) return res.json({ success: false, message: 'User not found' });
 
     const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-    if (user.password === hashedPassword) {
-      return res.json({ success: true });
-    } else {
-      return res.json({ success: false, message: 'Incorrect password' });
-    }
+
+    if (user.password === hashedPassword) return res.json({ success: true });
+    else return res.json({ success: false, message: 'Incorrect password' });
   } catch (err) {
     console.error(chalk.red('[1] Error fetching user:', err));
     return res.status(500).json({ error: 'Internal server error' });
